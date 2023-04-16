@@ -10,6 +10,9 @@ COPY requirements.txt . /app
 # Install pip
 RUN pip install -r requirements.txt
 
+# Copy flask app file
+COPY main.py . /app 
+
 # Adding port 
 EXPOSE 5000
 
