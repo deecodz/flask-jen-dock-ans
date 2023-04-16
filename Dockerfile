@@ -5,7 +5,7 @@ FROM python:3-alpine3.15
 WORKDIR /app
 
 # Copy Data into dir
-COPY . /app
+COPY requirements.txt . /app
 
 # Install pip
 RUN pip install -r requirements.txt
