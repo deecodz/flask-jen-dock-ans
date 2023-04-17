@@ -37,7 +37,7 @@
     - name: Run Docker container in detached mode on port 5000
       docker_container:
         name: flaskapp
-        image: derao/flask_app
+        image: derao/flask-app
         state: started
         detach: true
         ports:
