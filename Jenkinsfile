@@ -1,53 +1,36 @@
-pipeline {
-    agent any
-    
-    environment {
-        ANSIBLE_HOST_KEY_CHECKING = "False"
-        DOCKER_HUB_USERNAME = ""
-        DOCKER_HUB_PASSWORD = ""        
-    }
+pipeline{
 
-    stages {
-        stage('Build Docker image') {
-            steps {
-                script {
-                    def app = docker.build('flask-app')
-                    app.inside {
-                        sh 'echo "Docker build complete"'
-                    }
-                }
-            }
-        }
+	agent any
 
-        stage('Retrieve Docker Hub credentials') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'docker_credentials', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
-                    script {
-                        env.DOCKER_HUB_USERNAME = "${DOCKER_HUB_USERNAME}"
-                        sh 'echo $DOCKER_HUB_PASSWORD | docker login --username $DOCKER_HUB_USERNAME --password-stdin'
-                    }
-                }
-            }
-        }
+	environment {
+		DOCKERHUB_CREDENTIALS=credentials('docker_credentials')
+	}
 
+	stages {
+	    
+		stage('Build Docker image') {
 
-        stage('Push Docker image to Registry') {
-            steps {
-                script {
-                    try {
-                        docker.withRegistry("https://hub.docker.com/", 'docker_credentials') {
-                            def app = docker.image('flask-app')
-                            app.push("${env.BUILD_NUMBER}")
-                            app.push('latest')
-                        }
-                    } catch (Exception e) {
-                        error("Docker push failed: ${e.getMessage()}")
-                    }
-                }
-            }
-        }
+			steps {
+				sh 'docker build -t derao/flask-app:latest .'
+			}
+		}
+
+		stage('Login to Docker hub') {
+
+			steps {
+				sh 'echo $DOCKER_HUB_PASSWORD | docker login -u derao --password-stdin'
+			}
+		}
+
+		stage('Push Docker image to Registry') {
+
+			steps {
+				sh 'docker push derao/flask-app:latest'
+			}
+		}
+	
               
-        stage('Deploy') {
+        stage('Deploy to Remote servers') {
             steps {
                 echo 'Running Playbook'
                 ansiblePlaybook become: true, credentialsId: 'github', inventory: 'host.ini', playbook: 'flask-dep.yml'
