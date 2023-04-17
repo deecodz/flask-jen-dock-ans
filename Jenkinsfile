@@ -11,7 +11,7 @@ pipeline {
         stage('Build Docker image') {
             steps {
                 script {
-                    def app = docker.build('flask-app')
+                    def app = docker.build("derao/flask-app:${env.BUILD_NUMBER}")
                     app.inside {
                         sh 'echo "Docker build complete"'
                     }
@@ -35,9 +35,9 @@ pipeline {
             steps {
                 script {
                     try {
-                        docker.withRegistry(" https://index.docker.io", 'docker_credentials') {
-                            def app = docker.image('flask-app')
-                            app.push("${env.BUILD_NUMBER}")
+                        docker.withRegistry("", 'docker_credentials') {
+                            def app = docker.image("derao/flask-app:${env.BUILD_NUMBER}")
+//                             app.push("${env.BUILD_NUMBER}")
                             app.push('latest')
                         }
                     } catch (Exception e) {
