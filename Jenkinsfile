@@ -1,9 +1,10 @@
-
 pipeline {
     agent any
     
     environment {
         ANSIBLE_HOST_KEY_CHECKING = "False"
+        DOCKER_HUB_USERNAME = ""
+        DOCKER_HUB_PASSWORD = ""        
     }
 
     stages {
@@ -17,7 +18,19 @@ pipeline {
                 }
             }
         }
-        
+
+        stage('Retrieve Docker Hub credentials') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'Docker_credentials', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
+                    script {
+                        env.DOCKER_HUB_USERNAME = "${DOCKER_HUB_USERNAME}"
+                        sh 'echo $DOCKER_HUB_PASSWORD | docker login --username $DOCKER_HUB_USERNAME --password-stdin'
+                    }
+                }
+            }
+        }
+
+
         stage('Push Docker image to Registry') {
             steps {
                 script {
