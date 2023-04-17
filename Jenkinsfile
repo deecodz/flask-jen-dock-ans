@@ -18,14 +18,14 @@ pipeline{
 		stage('Login to Docker hub') {
 
 			steps {
-				sh 'echo $DOCKER_HUB_PASSWORD | docker login -u derao --password-stdin'
+				sh 'echo $DOCKER_HUB_PASSWORD | sudo docker login -u derao --password-stdin'
 			}
 		}
 
 		stage('Push Docker image to Registry') {
 
 			steps {
-				sh 'docker push derao/flask-app:latest'
+				sh 'sudo docker push derao/flask-app:latest'
 			}
 		}
 	
