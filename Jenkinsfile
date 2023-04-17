@@ -36,9 +36,9 @@ pipeline {
                 script {
                     try {
                         docker.withRegistry("", 'docker_credentials') {
-                            def app = docker.image("derao/flask-app:${env.BUILD_NUMBER}")
-//                             app.push("${env.BUILD_NUMBER}")
-                            app.push('latest')
+                            def app = docker.image("derao/flask-app")
+                            app.push("${env.BUILD_NUMBER}")
+//                             app.push('latest')
                         }
                     } catch (Exception e) {
                         error("Docker push failed: ${e.getMessage()}")
