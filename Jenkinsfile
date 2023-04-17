@@ -35,7 +35,7 @@ pipeline {
             steps {
                 script {
                     try {
-                        docker.withRegistry("https://hub.docker.com/", 'docker_credentials') {
+                        docker.withRegistry(" https://index.docker.io", 'docker_credentials') {
                             def app = docker.image('flask-app')
                             app.push("${env.BUILD_NUMBER}")
                             app.push('latest')
