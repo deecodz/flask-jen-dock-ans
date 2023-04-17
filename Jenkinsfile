@@ -34,10 +34,14 @@ pipeline {
         stage('Push Docker image to Registry') {
             steps {
                 script {
-                    docker.withRegistry('https://hub.docker.com/u/derao', 'Docker_credentials') {
-                        def app = docker.image('flask-app')
-                        app.push("${env.BUILD_NUMBER}")
-                        app.push('latest')
+                    try {
+                        docker.withRegistry('https://hub.docker.com/u/derao', 'Docker_credentials') {
+                            def app = docker.image('flask-app')
+                            app.push("${env.BUILD_NUMBER}")
+                            app.push('latest')
+                        }
+                    } catch (Exception e) {
+                        error("Docker push failed: ${e.getMessage()}")
                     }
                 }
             }
