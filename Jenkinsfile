@@ -21,7 +21,7 @@ pipeline {
 
         stage('Retrieve Docker Hub credentials') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'Docker_credentials', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
+                withCredentials([usernamePassword(credentialsId: 'docker_credentials', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
                     script {
                         env.DOCKER_HUB_USERNAME = "${DOCKER_HUB_USERNAME}"
                         sh 'echo $DOCKER_HUB_PASSWORD | docker login --username $DOCKER_HUB_USERNAME --password-stdin'
@@ -35,7 +35,7 @@ pipeline {
             steps {
                 script {
                     try {
-                        docker.withRegistry('https://hub.docker.com/', 'Docker_credentials') {
+                        docker.withRegistry("https://hub.docker.com/", 'docker_credentials') {
                             def app = docker.image('flask-app')
                             app.push("${env.BUILD_NUMBER}")
                             app.push('latest')
